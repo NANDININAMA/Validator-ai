@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const connectDB = require('./config/db');
 
 const authRoutes = require('./routes/authRoutes');
@@ -27,14 +28,22 @@ app.use('/api/ideas', ideaRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/expert', expertRoutes);
 
+// Public health endpoint for uptime checks
+app.get('/health', (req, res) => {
+  res.status(200).send({ ok: true, service: 'Startup Validator API', env: process.env.NODE_ENV || 'development' });
+});
+
 // Serve static files from frontend build
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend_original/dist')));
-  
-  // Handle React routing - send all non-API requests to index.html
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend_original/dist/index.html'));
-  });
+  const distPath = path.join(__dirname, '../frontend_original/dist');
+  if (fs.existsSync(distPath)) {
+    app.use(express.static(distPath));
+
+    // Handle React routing - send all non-API requests to index.html
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(distPath, 'index.html'));
+    });
+  }
 } else {
   // Development health check
   app.get('/', (req, res) => res.send({ ok: true, message: 'Startup Validator API' }));
