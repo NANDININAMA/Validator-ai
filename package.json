@@ -1,0 +1,26 @@
+{
+  "name": "startup-validator",
+  "version": "1.0.0",
+  "description": "Startup Idea Validator Application",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd Backend && npm run dev",
+    "dev:frontend": "cd frontend_original && npm run dev",
+    "install:all": "npm install && cd Backend && npm install && cd ../frontend_original && npm install",
+    "build": "cd frontend_original && npm run build",
+    "build:all": "npm run install:all && npm run build",
+    "start": "cd Backend && npm start",
+    "heroku-postbuild": "npm run build:all"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "keywords": [
+    "startup",
+    "validator",
+    "react",
+    "nodejs"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

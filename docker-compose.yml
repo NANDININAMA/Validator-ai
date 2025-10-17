@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: startup-validator-db
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: startup_validator
+    volumes:
+      - mongodb_data:/data/db
+
+  app:
+    build: .
+    container_name: startup-validator-app
+    restart: unless-stopped
+    ports:
+      - "5002:5002"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/startup_validator
+      - JWT_SECRET=your_production_jwt_secret
+      - NODE_ENV=production
+      - PORT=5002
+    depends_on:
+      - mongodb
+    volumes:
+      - ./Backend/.env:/app/backend/.env
+
+volumes:
+  mongodb_data:
