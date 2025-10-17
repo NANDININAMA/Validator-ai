@@ -1,6 +1,6 @@
 // src/services/profileService.js
 
-const API_BASE = "http://localhost:5002/api/auth";
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002'}/api/auth`;
 
 // Get user profile
 export async function getProfile() {

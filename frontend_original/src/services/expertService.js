@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5002/api/expert';
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002'}/api/expert`;
 
 const getAuthToken = () => {
   const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
