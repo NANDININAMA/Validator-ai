@@ -692,6 +692,11 @@
   pointer-events: none;
 }
 
+/* Prevent background visuals from causing horizontal scroll */
+.home-container {
+  overflow-x: hidden;
+}
+
 /* Navigation */
 .home-nav {
   position: fixed;
@@ -1502,6 +1507,35 @@
     flex-direction: column;
     align-items: center;
   }
+
+  /* Collapse nav and stack actions on mobile */
+  .nav-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .nav-actions {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .nav-btn {
+    flex: 1 1 48%;
+    text-align: center;
+  }
+
+  /* Simplify hero visuals to avoid overlap on small screens */
+  .hero-section {
+    min-height: auto;
+    gap: 2rem;
+  }
+
+  .hero-visual {
+    display: none;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1566,6 +1600,21 @@
   
   .stat-number {
     font-size: 2rem;
+  }
+
+  /* Make nav buttons full-width on very small screens */
+  .nav-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .nav-btn {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .hero-section {
+    gap: 1.5rem;
   }
   
   .section-header h2 {
