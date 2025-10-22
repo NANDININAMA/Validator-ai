@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getUserIdeas, getIdeaById, updateIdea, deleteIdea } from "../services/ideaService";
+import { getUserIdeas, getIdeaById, updateIdea, deleteIdea, exportIdeaPdf } from "../services/ideaService";
 import { useTheme } from "../contexts/ThemeContext";
 import RadarChart from "./RadarChart";
 import EnhancedChatbot from "./EnhancedChatbot";
@@ -56,18 +56,11 @@ function EntrepreneurDashboard({ user, onLogout, onUserUpdate }) {
 
   const downloadPdf = async (ideaId) => {
     try {
-      const res = await fetch(`http://localhost:5002/api/ideas/${ideaId}/export`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${JSON.parse(localStorage.getItem('currentUser') || '{}').token}`
-        }
-      });
-      if (!res.ok) throw new Error('Failed to export PDF');
-      const blob = await res.blob();
+      const { blob, filename } = await exportIdeaPdf(ideaId);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `idea-${ideaId}.pdf`;
+      a.download = filename || `idea-${ideaId}.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();

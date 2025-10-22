@@ -127,11 +127,24 @@ export async function exportIdeaPdf(ideaId) {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to export idea');
+      // Try to parse JSON error if provided, otherwise throw a generic error
+      try {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to export idea');
+      } catch (_) {
+        throw new Error('Failed to export idea');
+      }
     }
 
-    return await response.json();
+    const blob = await response.blob();
+    const disposition = response.headers.get('Content-Disposition') || '';
+    let filename = `idea-${ideaId}.pdf`;
+    const match = disposition.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
+    if (match) {
+      filename = decodeURIComponent(match[1] || match[2]);
+    }
+
+    return { blob, filename };
   } catch (err) {
     console.error('Export idea error:', err);
     throw err;
