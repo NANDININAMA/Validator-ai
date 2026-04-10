@@ -1,152 +1,112 @@
 const API_BASE = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002'}/api/ideas`;
 
-// Get auth token from localStorage
+// ✅ FIXED: get token directly
 const getAuthToken = () => {
-  const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-  return user.token;
+  return localStorage.getItem("token");
 };
 
-// Create a new idea
+// Create idea
 export async function createIdea(ideaData) {
-  try {
-    const response = await fetch(`${API_BASE}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${getAuthToken()}`
-      },
-      body: JSON.stringify(ideaData)
-    });
+  const response = await fetch(`${API_BASE}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${getAuthToken()}`
+    },
+    body: JSON.stringify(ideaData)
+  });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to create idea');
-    }
-
-    return await response.json();
-  } catch (err) {
-    console.error('Create idea error:', err);
-    throw err;
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to create idea');
   }
+
+  return await response.json();
 }
 
-// Get all ideas for the current user
+// Get ideas
 export async function getUserIdeas() {
-  try {
-    const response = await fetch(`${API_BASE}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${getAuthToken()}`
-      }
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to fetch ideas');
+  const response = await fetch(`${API_BASE}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${getAuthToken()}`
     }
+  });
 
-    return await response.json();
-  } catch (err) {
-    console.error('Get ideas error:', err);
-    throw err;
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to fetch ideas');
   }
+
+  return await response.json();
 }
 
-// Get a specific idea by ID
+// Get idea by ID
 export async function getIdeaById(ideaId) {
-  try {
-    const response = await fetch(`${API_BASE}/${ideaId}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${getAuthToken()}`
-      }
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to fetch idea');
+  const response = await fetch(`${API_BASE}/${ideaId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${getAuthToken()}`
     }
+  });
 
-    return await response.json();
-  } catch (err) {
-    console.error('Get idea error:', err);
-    throw err;
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to fetch idea');
   }
+
+  return await response.json();
 }
 
-// Update an idea
+// Update idea
 export async function updateIdea(ideaId, updates) {
-  try {
-    const response = await fetch(`${API_BASE}/${ideaId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${getAuthToken()}`
-      },
-      body: JSON.stringify(updates)
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to update idea');
-    }
-    return await response.json();
-  } catch (err) {
-    console.error('Update idea error:', err);
-    throw err;
+  const response = await fetch(`${API_BASE}/${ideaId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${getAuthToken()}`
+    },
+    body: JSON.stringify(updates)
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to update idea');
   }
+
+  return await response.json();
 }
 
-// Delete an idea
+// Delete idea
 export async function deleteIdea(ideaId) {
-  try {
-    const response = await fetch(`${API_BASE}/${ideaId}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${getAuthToken()}`
-      }
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to delete idea');
+  const response = await fetch(`${API_BASE}/${ideaId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${getAuthToken()}`
     }
-    return await response.json();
-  } catch (err) {
-    console.error('Delete idea error:', err);
-    throw err;
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to delete idea');
   }
+
+  return await response.json();
 }
 
-// Export idea to PDF
+// Export PDF
 export async function exportIdeaPdf(ideaId) {
-  try {
-    const response = await fetch(`${API_BASE}/${ideaId}/export`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${getAuthToken()}`
-      }
-    });
-
-    if (!response.ok) {
-      // Try to parse JSON error if provided, otherwise throw a generic error
-      try {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to export idea');
-      } catch (_) {
-        throw new Error('Failed to export idea');
-      }
+  const response = await fetch(`${API_BASE}/${ideaId}/export`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${getAuthToken()}`
     }
+  });
 
-    const blob = await response.blob();
-    const disposition = response.headers.get('Content-Disposition') || '';
-    let filename = `idea-${ideaId}.pdf`;
-    const match = disposition.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
-    if (match) {
-      filename = decodeURIComponent(match[1] || match[2]);
-    }
-
-    return { blob, filename };
-  } catch (err) {
-    console.error('Export idea error:', err);
-    throw err;
+  if (!response.ok) {
+    throw new Error('Failed to export idea');
   }
+
+  const blob = await response.blob();
+  return blob;
 }
