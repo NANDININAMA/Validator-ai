@@ -1,4 +1,5 @@
-# 🚀 Startup Validator
+ Last updated: April 2026
+ # 🚀 Startup Validator
 
 A comprehensive web application for validating and scoring startup ideas. Entrepreneurs can submit their ideas and receive automated scoring and feedback, while admins can manage and review all submissions.
 
